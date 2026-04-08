@@ -3,19 +3,19 @@ import TrackSelector from "./components/TrackSelector.vue";
 import type { Track } from "./data/tracks";
 import { ref, computed} from "vue";
 import { fetchWeather } from "./services/weatherService";
-import type { WeatherData } from "./types/weather";
+import type { OpenMeteoResponse } from "./types/weather";
 import WeatherCharts from "./components/WeatherCharts.vue";
-import { filterWeatherByDay } from "./utils/weatherProcessing";
+import { processWeather } from "./utils/weatherProcessing";
 
 
 const selectedTrack = ref<Track | null>(null);
 const selectedDay = ref<"today" | "tomorrow" | "dayAfter">("today");
-const weatherData = ref<WeatherData | null>(null);
+const weatherData = ref<OpenMeteoResponse | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
-const filteredWeather = computed(() => {
+const processedWeather = computed(() => {
   if (!weatherData.value) return null;
-  return filterWeatherByDay(weatherData.value, selectedDay.value);
+  return processWeather(weatherData.value, selectedDay.value);
 });
 
 
@@ -58,12 +58,7 @@ async function handleTrackSelected(track: Track) {
   <div v-if="error">{{ error }}</div>
 
   <div v-if="weatherData">
-    <p>Daten erfolgreich geladen ✅</p>
-    <p>Erster Temperaturwert: {{ weatherData.hourly.temperature_2m[0] }} °C</p>
-  </div>
-
-  <div v-if="weatherData">
-    <WeatherCharts v-if="filteredWeather" :weather="filteredWeather" />
+    <WeatherCharts v-if="processedWeather" :weather="processedWeather" />
   </div>
 
 </template>
