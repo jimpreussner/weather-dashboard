@@ -1,28 +1,31 @@
 <script setup lang="ts">
 import { tracks, type Track } from "../data/tracks";
-import { ref } from "vue";
 
-const selectedTrack = ref<Track | null>(null);
+defineProps<{
+  modelValue: Track | null;
+}>();
 
-// Event an Eltern-Komponente senden
 const emit = defineEmits<{
-  (e: "trackSelected", track: Track): void;
+  "update:modelValue": [track: Track | null];
 }>();
 
 function onChange(event: Event) {
-  const index = (event.target as HTMLSelectElement).value;
-  const track = tracks[Number(index)];
-  selectedTrack.value = track;
-  emit("trackSelected", track);
+  const value = (event.target as HTMLSelectElement).value;
+  const track = tracks.find((t) => t.name === value) ?? null;
+  emit("update:modelValue", track);
 }
 </script>
 
 <template>
-  <div>
-    <label>Select Racetrack:</label>
-    <select @change="onChange">
-      <option disabled selected>Select</option>
-      <option v-for="(track, index) in tracks" :key="index" :value="index">
+  <div class="track-selector">
+    <label for="track-select">Track:</label>
+    <select
+      id="track-select"
+      :value="modelValue?.name ?? ''"
+      @change="onChange"
+    >
+      <option value="" disabled>Select a track</option>
+      <option v-for="track in tracks" :key="track.name" :value="track.name">
         {{ track.name }}
       </option>
     </select>

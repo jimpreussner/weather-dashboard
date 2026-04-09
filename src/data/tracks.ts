@@ -5,8 +5,6 @@ export interface Track {
 }
 
 export const tracks: Track[] = [
-  //{ name: "Sachsenring", lat: 50.79, lon: 12.69 },
-  //{ name: "Lausitzring", lat: 51.53, lon: 13.93 },
   { name: "Autodrom Most", lat: 50.51884205271267, lon: 13.604885534091473},
   { name: "Teststrecke Freital", lat: 51.00307024827095, lon: 13.635912669543},
   { name: "RedBull Ring", lat: 47.221320912541664, lon: 14.762632556193969},
