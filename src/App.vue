@@ -60,13 +60,10 @@ async function handleTrackSelected(track: Track) {
 
   <div v-if="weatherData">
     <WeatherCharts v-if="processedWeather" :weather="processedWeather" />
-  </div>
-
-  <div>
     <WeatherMap
-      v-if="selectedTrack && selectedDay === 'today'"
-      :lat="selectedTrack.lat"
-      :lon="selectedTrack.lon"
+      v-if="selectedDay === 'today' && selectedTrack"
+      :track="selectedTrack"
+      :selectedDay="selectedDay"
     />
   </div>
 
