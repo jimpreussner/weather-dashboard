@@ -6,6 +6,7 @@ import { fetchWeather } from "./services/weatherService";
 import type { OpenMeteoResponse } from "./types/weather";
 import WeatherCharts from "./components/WeatherCharts.vue";
 import { processWeather } from "./utils/weatherProcessing";
+import WeatherMap from "./components/WeatherMap.vue";
 
 
 const selectedTrack = ref<Track | null>(null);
@@ -59,6 +60,14 @@ async function handleTrackSelected(track: Track) {
 
   <div v-if="weatherData">
     <WeatherCharts v-if="processedWeather" :weather="processedWeather" />
+  </div>
+
+  <div>
+    <WeatherMap
+      v-if="selectedTrack && selectedDay === 'today'"
+      :lat="selectedTrack.lat"
+      :lon="selectedTrack.lon"
+    />
   </div>
 
 </template>
