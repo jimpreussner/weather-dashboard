@@ -19,9 +19,9 @@ function onChange(event: Event) {
 
 <template>
   <div>
-    <label>Rennstrecke wählen:</label>
+    <label>Select Racetrack:</label>
     <select @change="onChange">
-      <option disabled selected>Bitte wählen</option>
+      <option disabled selected>Select</option>
       <option v-for="(track, index) in tracks" :key="index" :value="index">
         {{ track.name }}
       </option>

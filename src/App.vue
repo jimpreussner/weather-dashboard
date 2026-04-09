@@ -21,13 +21,12 @@ const processedWeather = computed(() => {
 
 async function handleTrackSelected(track: Track) {
   selectedTrack.value = track;
-  console.log("Gewählte Strecke:", track);
 
   try {
     const data = await fetchWeather(track.lat, track.lon);
     weatherData.value = data;
   } catch (err) {
-    error.value = "Fehler beim Laden der Daten";
+    error.value = "Error while fetching the data";
   } finally {
     loading.value = false;
   }
@@ -36,25 +35,20 @@ async function handleTrackSelected(track: Track) {
 </script>
 
 <template>
-  <h1>Wetter Dashboard</h1>
+  <h1>Formula Student Weather Dashboard</h1>
 
   <TrackSelector @trackSelected="handleTrackSelected" />
 
   <div>
-    <label>Tag wählen:</label>
+    <label>Select Day:</label>
     <select v-model="selectedDay">
-      <option value="today">Heute</option>
-      <option value="tomorrow">Morgen</option>
-      <option value="dayAfter">Übermorgen</option>
+      <option value="today">Today</option>
+      <option value="tomorrow">Tomorrow</option>
+      <option value="dayAfter">Overmorrow</option>
     </select>
-
   </div>
 
-  <div v-if="selectedTrack">
-    <p>Ausgewählt: {{ selectedTrack.name }}</p>
-  </div>
-
-  <div v-if="loading">Lade Wetterdaten...</div>
+  <div v-if="loading">Loading Weather Data...</div>
   <div v-if="error">{{ error }}</div>
 
   <div v-if="weatherData">
