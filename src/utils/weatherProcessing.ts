@@ -20,7 +20,6 @@ export function processWeather(
   const temps = data.minutely_15.temperature_2m;
   const rain = data.minutely_15.precipitation;
   const wind = data.minutely_15.wind_speed_10m;
-  const shortwave = data.minutely_15.shortwave_radiation;
   const direct = data.minutely_15.direct_radiation;
 
   const hourlyTimes = data.hourly.time.map(t => new Date(t));
@@ -46,11 +45,6 @@ export function processWeather(
       // Asphalt Temp (dein Modell)
       const asphalt =
         10 + 1.05433 * temps[i] + 0.02515 * direct[i];
-
-      // Radiation Coef
-      const radCoef =
-        2 * (shortwave[i] - direct[i]) /
-        (shortwave[i] + direct[i] || 1);
 
       result.time.push(times[i]);
       result.temperature.push(temps[i]);

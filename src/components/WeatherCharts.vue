@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import Chart from "chart.js/auto";
-import type { OpenMeteoResponse } from "../types/weather";
 
 const props = defineProps<{
   weather: {
