@@ -81,11 +81,6 @@ async function loadWeather() {
   }
 }
 
-async function handleTrackSelected(track: Track) {
-  selectedTrack.value = track;
-  await loadWeather();
-}
-
 watch(selectedModel, async () => {
   if (selectedTrack.value) {
     await loadWeather();
@@ -172,20 +167,26 @@ watch(selectedTrack, async (track) => {
 <style scoped>
 .controls-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 320px minmax(420px, 640px);
   gap: 24px;
-  margin-bottom: 24px;
+  margin: 0 auto 24px;
+  max-width: 800px;
   text-align: left;
+  align-items: start;
 }
 
 .left-column {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .right-column {
   display: grid;
   gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--accent-border-strong);
+  border-radius: 10px;
+  background: var(--panel-bg);
 }
 
 .control-block {
@@ -193,25 +194,58 @@ watch(selectedTrack, async (track) => {
   gap: 8px;
 }
 
+.control-block label,
+.right-column > label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.control-block select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  box-sizing: border-box;
+}
+
 .metrics-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
+  gap: 10px 16px;
 }
 
 .metric-option {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 46px;
+}
+
+.metric-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+
 }
 
 @media (max-width: 900px) {
   .controls-grid {
     grid-template-columns: 1fr;
+    max-width: none;
   }
 
   .metrics-grid {
     grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .metric-option {
+    min-height: 36px;
+    gap: 6px;
   }
 }
 </style>

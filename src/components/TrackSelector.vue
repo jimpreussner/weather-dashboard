@@ -18,7 +18,7 @@ function onChange(event: Event) {
 
 <template>
   <div class="track-selector">
-    <label for="track-select">Track:</label>
+    <label for="track-select"></label>
     <select
       id="track-select"
       :value="modelValue?.name ?? ''"
@@ -31,3 +31,17 @@ function onChange(event: Event) {
     </select>
   </div>
 </template>
+
+<style scoped>
+select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  box-sizing: border-box;
+}
+</style>
