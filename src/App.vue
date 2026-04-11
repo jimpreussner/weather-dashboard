@@ -2,6 +2,7 @@
 import { ref, computed, watch } from "vue";
 import TrackSelector from "./components/TrackSelector.vue";
 import WeatherCharts from "./components/WeatherCharts.vue";
+import WeatherMap from "./components/WeatherMap.vue";
 
 import type { Track } from "./data/tracks";
 import { fetchWeatherForTrack } from "./services/weatherService";
@@ -161,7 +162,13 @@ watch(selectedTrack, async (track) => {
       :track-name="selectedTrack?.name"
       :model-name="selectedModelLabel"
     />
+    <WeatherMap
+      v-if="selectedDay === 'today' && selectedTrack"
+      :track="selectedTrack"
+      :selectedDay="selectedDay"
+    />
   </div>
+
 </template>
 
 <style scoped>
@@ -177,14 +184,14 @@ watch(selectedTrack, async (track) => {
 
 .left-column {
   display: grid;
-  gap: 18px;
+  gap: 12px;
 }
 
 .right-column {
   display: grid;
   gap: 12px;
   padding: 16px;
-  border: 1px solid var(--accent-border-strong);
+  border: 1px solid var(--accent);
   border-radius: 10px;
   background: var(--panel-bg);
 }
