@@ -1,145 +1,199 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import Chart from "chart.js/auto";
-import type { OpenMeteoResponse } from "../types/weather";
+
+type WeatherMetric =
+  | "temperature"
+  | "precipitation"
+  | "wind"
+  | "asphaltTemp"
+  | "directRadiation"
+  | "cloudCover"
+  | "radiationCoef";
+
+interface ProcessedWeatherSlice {
+  time: string[];
+  temperature: number[];
+  precipitation: number[];
+  wind: number[];
+  asphaltTemp: number[];
+  directRadiation: number[];
+  cloudCover: number[];
+  radiationCoef: number[];
+}
 
 const props = defineProps<{
-  weather: {
-    time: string[];
-    temperature: number[];
-    precipitation: number[];
-    wind: number[];
-    asphaltTemp: number[];
-    directRadiation: number[];
-  };
+  weather: ProcessedWeatherSlice;
+  selectedMetrics: WeatherMetric[];
+  trackName?: string;
+  modelName?: string;
 }>();
 
-let tempChart: Chart | null = null;
-let rainChart: Chart | null = null;
-let asphaltChart: Chart | null = null;
-let radiationChart: Chart | null = null;
-let windChart: Chart | null = null;
+const chartCanvas = ref<HTMLCanvasElement | null>(null);
+let chart: Chart | null = null;
 
-// Canvas refs
-const tempCanvas = ref<HTMLCanvasElement | null>(null);
-const rainCanvas = ref<HTMLCanvasElement | null>(null);
-const asphaltCanvas = ref<HTMLCanvasElement | null>(null);
-const radiationCanvas = ref<HTMLCanvasElement | null>(null);
-const windCanvas = ref<HTMLCanvasElement | null>(null);
-
-function createCharts() {
-  if (!tempCanvas || !rainCanvas) return;
-
-  const labels = props.weather.time.map(t =>
-    new Date(t).toLocaleString("de-DE", { minute:"2-digit", hour:"2-digit", day: "2-digit", month: "2-digit" })
-  );
-
-  // Temperatur Chart
-  tempChart = new Chart(tempCanvas.value!, {
+const metricConfig: Record<
+  WeatherMetric,
+  {
+    label: string;
+    color: string;
+    type: "line" | "bar";
+    yAxisID: "y" | "y1";
+  }
+> = {
+  temperature: {
+    label: "Temperatur (°C)",
+    color: "#e53935",
     type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Temperatur (°C)",
-          data: props.weather.temperature,
-          borderColor: "red",
-          fill: false
-        }
-      ]
-    }
-  });
-
-  // Niederschlag Chart
-  rainChart = new Chart(rainCanvas.value!, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Niederschlag (mm)",
-          data: props.weather.precipitation,
-          backgroundColor: "blue"
-        }
-      ]
-    }
-  });
-
-  // Asphalt Temp
-  asphaltChart = new Chart(asphaltCanvas.value!, {
+    yAxisID: "y",
+  },
+  asphaltTemp: {
+    label: "Asphalttemperatur (°C)",
+    color: "#fb8c00",
     type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Asphalt Temperatur (°C)",
-          data: props.weather.asphaltTemp,
-          borderColor: "orange",
-          fill: false
-        }
-      ]
-    }
-  });
-
-  // Solar Radiation
-  radiationChart = new Chart(radiationCanvas.value!, {
+    yAxisID: "y",
+  },
+  precipitation: {
+    label: "Niederschlag (mm)",
+    color: "#1e88e5",
     type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Sonneneinstrahlung (W/m^2)",
-          data: props.weather.directRadiation,
-          backgroundColor: "red"
-        }
-      ]
-    }
-  });
+    yAxisID: "y1",
+  },
+  wind: {
+    label: "Windgeschwindigkeit (m/s)",
+    color: "#3949ab",
+    type: "line",
+    yAxisID: "y1",
+  },
+  directRadiation: {
+    label: "Direktstrahlung (W/m²)",
+    color: "#f4511e",
+    type: "line",
+    yAxisID: "y1",
+  },
+  cloudCover: {
+    label: "Wolkenbedeckung (%)",
+    color: "#546e7a",
+    type: "line",
+    yAxisID: "y1",
+  },
+  radiationCoef: {
+    label: "Radiation Coef",
+    color: "#8e24aa",
+    type: "line",
+    yAxisID: "y1",
+  },
+};
 
-  // Wind
-  windChart = new Chart(windCanvas.value!, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Windgeschwindigkeit (m/s)",
-          data: props.weather.wind,
-          backgroundColor: "blue"
-        }
-      ]
-    }
+function buildDatasets() {
+  return props.selectedMetrics.map((metric) => {
+    const cfg = metricConfig[metric];
+    const values = props.weather[metric];
+
+    return {
+      type: cfg.type,
+      label: cfg.label,
+      data: values,
+      borderColor: cfg.color,
+      backgroundColor: cfg.type === "bar" ? `${cfg.color}99` : cfg.color,
+      yAxisID: cfg.yAxisID,
+      tension: 0.25,
+      fill: false,
+      pointRadius: 0,
+      borderWidth: 2,
+      order: cfg.type === "line" ? 1 : 2,
+    };
   });
 }
 
-onMounted(createCharts);
+function renderChart() {
+  if (!chartCanvas.value) return;
 
-// Wenn neue Daten kommen → Charts neu erstellen
-watch(() => props.weather, () => {
-  tempChart?.destroy();
-  rainChart?.destroy();
-  asphaltChart?.destroy();
-  radiationChart?.destroy();
-  windChart?.destroy();
-  createCharts();
-});
+  chart?.destroy();
+
+  const labels = props.weather.time.map((t) =>
+    new Date(t).toLocaleString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+    })
+  );
+
+  chart = new Chart(chartCanvas.value, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: buildDatasets(),
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: [props.trackName, props.modelName].filter(Boolean).join(" — "),
+        },
+        legend: {
+          position: "top",
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            maxRotation: 0,
+            autoSkip: true,
+          },
+        },
+        y: {
+          type: "linear",
+          position: "left",
+          title: {
+            display: true,
+            text: "Temperatur",
+          },
+        },
+        y1: {
+          type: "linear",
+          position: "right",
+          grid: {
+            drawOnChartArea: false,
+          },
+          title: {
+            display: true,
+            text: "Weitere Werte",
+          },
+        },
+      },
+    },
+  });
+}
+
+onMounted(renderChart);
+
+watch(
+  () => [props.weather, props.selectedMetrics, props.trackName, props.modelName],
+  () => {
+    renderChart();
+  },
+  { deep: true }
+);
 </script>
 
 <template>
-  <div>
-    <h2>Temperatur</h2>
-    <canvas ref="tempCanvas"></canvas>
-
-    <h2>Niederschlag</h2>
-    <canvas ref="rainCanvas"></canvas>
-
-    <h2>Asphalttemperatur</h2>
-    <canvas ref="asphaltCanvas"></canvas>
-
-    <h2>Sonneneinstrahlung</h2>
-    <canvas ref="radiationCanvas"></canvas>
-
-    <h2>Windgeschwindigkeit</h2>
-    <canvas ref="windCanvas"></canvas>
+  <div class="chart-wrapper">
+    <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
+
+<style scoped>
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+}
+</style>

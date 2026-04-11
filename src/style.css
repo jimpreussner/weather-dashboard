@@ -1,23 +1,33 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --text: #f3f4f6;
+  --text-h: #ffffff;
+  --bg: #121317;
+  --bg-soft: #1a1c22;
+  --panel-bg: #17191f;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --border: #2f333d;
+  --border-strong: #434957;
+
+  --accent: #ff630f;
+  --accent-hover: #ff7a33;
+  --accent-bg: rgba(205, 85, 21, 0.12);
+  --accent-border: rgba(255, 99, 15, 0.35);
+  --accent-border-strong: rgba(255, 99, 15, 0.65);
+
+  --code-bg: #1b1d24;
+  --social-bg: rgba(255, 255, 255, 0.04);
+
+  --shadow:
+    rgba(0, 0, 0, 0.35) 0 10px 15px -3px,
+    rgba(0, 0, 0, 0.2) 0 4px 6px -2px;
+
+  --sans: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: dark;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -37,7 +47,7 @@
     --bg: #16171d;
     --border: #2e303a;
     --code-bg: #1f2028;
-    --accent: #c084fc;
+    --accent: #ff630f;
     --accent-bg: rgba(192, 132, 252, 0.15);
     --accent-border: rgba(192, 132, 252, 0.5);
     --social-bg: rgba(47, 48, 58, 0.5);
@@ -64,9 +74,11 @@ h2 {
 h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
+  line-height: 1.15;
   margin: 32px 0;
   @media (max-width: 1024px) {
     font-size: 36px;
+    line-height: 1.25;
     margin: 20px 0;
   }
 }
