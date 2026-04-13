@@ -8,8 +8,7 @@ type WeatherMetric =
   | "wind"
   | "asphaltTemp"
   | "directRadiation"
-  | "cloudCover"
-  | "radiationCoef";
+  | "cloudCover";
 
 interface ProcessedWeatherSlice {
   time: string[];
@@ -19,7 +18,6 @@ interface ProcessedWeatherSlice {
   asphaltTemp: number[];
   directRadiation: number[];
   cloudCover: number[];
-  radiationCoef: number[];
 }
 
 const props = defineProps<{
@@ -38,51 +36,45 @@ const metricConfig: Record<
     label: string;
     color: string;
     type: "line" | "bar";
-    yAxisID: "y" | "y1";
+    yAxisID: "y" | "y1" | "y2";
   }
 > = {
   temperature: {
-    label: "Temperatur (°C)",
+    label: "Temperature (°C)",
     color: "#e53935",
     type: "line",
     yAxisID: "y",
   },
   asphaltTemp: {
-    label: "Asphalttemperatur (°C)",
+    label: "Asphalt temperature (°C)",
     color: "#fb8c00",
     type: "line",
     yAxisID: "y",
   },
   precipitation: {
-    label: "Niederschlag (mm)",
+    label: "Precipitation (mm)",
     color: "#1e88e5",
     type: "bar",
     yAxisID: "y1",
   },
   wind: {
-    label: "Windgeschwindigkeit (m/s)",
+    label: "Wind speed (m/s)",
     color: "#3949ab",
     type: "line",
     yAxisID: "y1",
   },
   directRadiation: {
-    label: "Direktstrahlung (W/m²)",
+    label: "Solar Radiation (W/m²)",
     color: "#f4511e",
     type: "line",
-    yAxisID: "y1",
+    yAxisID: "y2",
   },
   cloudCover: {
-    label: "Wolkenbedeckung (%)",
+    label: "Cloud coverage (%)",
     color: "#546e7a",
     type: "line",
     yAxisID: "y1",
-  },
-  radiationCoef: {
-    label: "Radiation Coef",
-    color: "#8e24aa",
-    type: "line",
-    yAxisID: "y1",
-  },
+  }
 };
 
 function buildDatasets() {
@@ -106,6 +98,63 @@ function buildDatasets() {
   });
 }
 
+function hasAxis(axisId: "y" | "y1" | "y2") {
+  return props.selectedMetrics.some(
+    (metric) => metricConfig[metric].yAxisID === axisId
+  );
+}
+
+function getCurrentTimeIndex() {
+  const now = new Date();
+  const times = props.weather.time.map((t) => new Date(t).getTime());
+
+  if (times.length === 0) return -1;
+  if (now.getTime() < times[0] || now.getTime() > times[times.length - 1]) {
+    return -1;
+  }
+
+  let closestIndex = 0;
+  let smallestDiff = Infinity;
+
+  for (let i = 0; i < times.length; i++) {
+    const diff = Math.abs(times[i] - now.getTime());
+    if (diff < smallestDiff) {
+      smallestDiff = diff;
+      closestIndex = i;
+    }
+  }
+
+  return closestIndex;
+}
+
+const currentTimeLinePlugin = {
+  id: "currentTimeLine",
+  afterDatasetsDraw(chartInstance: Chart) {
+    const xScale = chartInstance.scales.x;
+    const yScale = chartInstance.scales.y;
+
+    if (!xScale || !yScale) return;
+
+    const index = getCurrentTimeIndex();
+    if (index < 0) return;
+
+    const x = xScale.getPixelForValue(index);
+    const { ctx, chartArea } = chartInstance;
+
+    if (x < chartArea.left || x > chartArea.right) return;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x, chartArea.top);
+    ctx.lineTo(x, chartArea.bottom);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255,255,255,0.65)";
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.restore();
+  },
+};
+
 function renderChart() {
   if (!chartCanvas.value) return;
 
@@ -115,8 +164,6 @@ function renderChart() {
     new Date(t).toLocaleString("de-DE", {
       hour: "2-digit",
       minute: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
     })
   );
 
@@ -126,6 +173,7 @@ function renderChart() {
       labels,
       datasets: buildDatasets(),
     },
+    plugins: [currentTimeLinePlugin],
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -144,28 +192,55 @@ function renderChart() {
       },
       scales: {
         x: {
+          grid: {
+            display: true,
+            color: "rgba(255,255,255,0.2)",
+            drawTicks: true,
+          },
           ticks: {
             maxRotation: 0,
             autoSkip: true,
+            maxTicksLimit: 8,
           },
         },
         y: {
           type: "linear",
           position: "left",
-          title: {
+          display: hasAxis("y"),
+          grid: {
             display: true,
-            text: "Temperatur",
+            color: "rgba(255,255,255,0.2)",
+            drawTicks: true,
+          },
+          title: {
+            display: hasAxis("y"),
+            text: "Temperature (°C)",
           },
         },
         y1: {
           type: "linear",
           position: "right",
+          display: hasAxis("y1") ? "auto" : false,
           grid: {
             drawOnChartArea: false,
+            color: "rgba(255,255,255,0.2)",
           },
           title: {
-            display: true,
-            text: "Weitere Werte",
+            display: hasAxis("y1"),
+            text: "Other Values",
+          },
+        },
+        y2: {
+          type: "linear",
+          position: "right",
+          display: hasAxis("y2") ? "auto" : false,
+          grid: {
+            drawOnChartArea: false,
+            color: "rgba(255,255,255,0.08)",
+          },
+          title: {
+            display: hasAxis("y2"),
+            text: "Solar radiation (W/m²)",
           },
         },
       },
@@ -194,6 +269,12 @@ watch(
 .chart-wrapper {
   position: relative;
   width: 100%;
-  min-height: 420px;
+  min-height: 450px;
+}
+
+@media (max-width: 600px) {
+  .chart-wrapper {
+    min-height: 400px;
+  }
 }
 </style>

@@ -339,7 +339,7 @@ onUnmounted(() => {
 .map-container {
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 500px;
   border: 1px solid var(--accent);
   border-radius: 12px;
   overflow: hidden;
@@ -381,8 +381,8 @@ onUnmounted(() => {
   padding: 12px;
   border: 1px solid var(--accent);
   border-radius: 12px;
-  background: rgba(18, 19, 23, 0.82);
-  backdrop-filter: blur(10px);
+  background: var(--accent-bg);
+  backdrop-filter: blur(1px);
   color: #fff;
 }
 
@@ -391,7 +391,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .timestamp,
@@ -405,11 +405,11 @@ onUnmounted(() => {
   padding: 0 12px;
   border: 1px solid var(--accent);
   border-radius: 10px;
-  background: rgba(18, 19, 23, 0.78);
+  background: var(--accent-bg);
   color: #fff;
   font: inherit;
   cursor: pointer;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(1px);
 }
 
 .map-btn:hover {
@@ -425,22 +425,9 @@ onUnmounted(() => {
 
 .timeline-slider {
   width: 100%;
-  margin: 0 0 10px;
+  margin: 0 0 0px;
   accent-color: var(--accent);
   cursor: pointer;
-}
-
-.progress-bar {
-  height: 6px;
-  background: rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress {
-  height: 100%;
-  background: var(--accent);
-  transition: width 0.2s linear;
 }
 
 @media (max-width: 900px) {
@@ -464,6 +451,7 @@ onUnmounted(() => {
 
   .overlay-card {
     padding: 10px;
+    max-width: 30%;
   }
 
   .map-btn {

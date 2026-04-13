@@ -194,6 +194,7 @@ watch(selectedTrack, async (track) => {
   border: 1px solid var(--accent);
   border-radius: 10px;
   background: var(--bg);
+  min-width: 0;
 }
 
 .control-block {
@@ -241,13 +242,20 @@ watch(selectedTrack, async (track) => {
 
 @media (max-width: 900px) {
   .controls-grid {
-    grid-template-columns: 1fr;
-    max-width: none;
+    grid-template-columns: 300px minmax(280px, 1fr);
+    max-width: 800px;
   }
 
   .metrics-grid {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .controls-grid {
+    grid-template-columns: 1fr;
+    max-width: none;
   }
 
   .metric-option {
