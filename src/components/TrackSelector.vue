@@ -37,7 +37,7 @@ select {
   width: 100%;
   min-height: 46px;
   padding: 0 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
   border-radius: 8px;
   background: var(--bg);
   color: var(--text-h);

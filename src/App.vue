@@ -193,7 +193,7 @@ watch(selectedTrack, async (track) => {
   padding: 16px;
   border: 1px solid var(--accent);
   border-radius: 10px;
-  background: var(--panel-bg);
+  background: var(--bg);
 }
 
 .control-block {
@@ -211,7 +211,7 @@ watch(selectedTrack, async (track) => {
   width: 100%;
   min-height: 46px;
   padding: 0 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
   border-radius: 8px;
   background: var(--bg);
   color: var(--text-h);
