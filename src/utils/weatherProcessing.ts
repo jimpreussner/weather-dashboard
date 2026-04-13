@@ -3,7 +3,7 @@ import type { Track } from "../data/tracks";
 import { resolveAsphaltParameters } from "../data/tracks";
 
 const SIGMA = 5.670374419e-8; // Stefan-Boltzmann-Konstante W/(m² K⁴)
-const ACTIVE_LAYER_DEPTH_M = 0.03; // angenommene thermisch aktive Asphaltschicht
+const ACTIVE_LAYER_DEPTH_M = 0.05; // angenommene thermisch aktive Asphaltschicht
 const TIME_STEP_SECONDS = 15 * 60;
 
 export function processWeather(
@@ -40,6 +40,10 @@ export function processWeather(
 
   const end = new Date(baseDate);
   end.setHours(20, 0, 0, 0);
+
+  const simulationStart = new Date(start);
+  simulationStart.setHours(start.getHours() - 3);
+
 
   const times = data.minutely15.time;
   const temps = data.minutely15.temperature_2m;
@@ -83,7 +87,7 @@ export function processWeather(
   for (let i = 0; i < times.length; i++) {
     const t = times[i];
 
-    if (t >= start && t <= end) {
+    if (t >= simulationStart && t <= end) {
       const airTempC = temps[i];
       const rainMm = rain[i];
       const windSpeed = wind[i];
@@ -113,17 +117,15 @@ export function processWeather(
 
       currentAsphaltTempC = step.newSurfaceTempC;
 
-      const radiationCoef =
-        (2 * (shortwaveRad - directRad)) / Math.max(shortwaveRad + directRad, 1);
-
-      result.time.push(t.toISOString());
-      result.temperature.push(airTempC);
-      result.precipitation.push(rainMm);
-      result.wind.push(windSpeed);
-      result.asphaltTemp.push(currentAsphaltTempC);
-      result.directRadiation.push(directRad);
-      result.cloudCover.push(cloud);
-      result.radiationCoef.push(radiationCoef);
+      if(t>=start && t<=end) {
+        result.time.push(t.toISOString());
+        result.temperature.push(airTempC);
+        result.precipitation.push(rainMm);
+        result.wind.push(windSpeed);
+        result.asphaltTemp.push(currentAsphaltTempC);
+        result.directRadiation.push(directRad);
+        result.cloudCover.push(cloud);
+      }
 
       debugRows.push({
         time: t.toISOString(),
@@ -250,7 +252,7 @@ function getConvectiveHeatTransferCoefficient(
 ): number {
   const v = Math.max(0, windSpeedMs) * Math.max(0.1, windFactor);
 
-  return 5.6 + 4.0 * v;
+  return 6.5 + 5.0 * v; // estimation could also be 5.6 + 4.0 * v
 }
 
 function estimateSkyTemperatureKelvin(
