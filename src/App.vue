@@ -60,7 +60,7 @@ const selectedModelLabel = computed(() => {
 
 const processedWeather = computed(() => {
   if (!weatherData.value) return null;
-  return processWeather(weatherData.value, selectedDay.value);
+  return processWeather(weatherData.value, selectedDay.value, selectedTrack.value ?? undefined);
 });
 
 async function loadWeather() {
