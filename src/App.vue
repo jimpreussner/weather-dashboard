@@ -16,8 +16,7 @@ type WeatherMetric =
   | "wind"
   | "asphaltTemp"
   | "directRadiation"
-  | "cloudCover"
-  | "radiationCoef";
+  | "cloudCover";
 
 const selectedTrack = ref<Track | null>(null);
 const selectedDay = ref<DayOption>("today");
@@ -42,13 +41,12 @@ const availableModels: { value: WeatherModel; label: string }[] = [
 ];
 
 const availableMetrics: { value: WeatherMetric; label: string }[] = [
-  { value: "temperature", label: "Temperatur" },
-  { value: "asphaltTemp", label: "Asphalttemperatur" },
-  { value: "precipitation", label: "Niederschlag" },
-  { value: "wind", label: "Wind" },
-  { value: "directRadiation", label: "Direktstrahlung" },
-  { value: "cloudCover", label: "Wolkenbedeckung" }
-  //{ value: "radiationCoef", label: "Radiation Coef" },
+  { value: "temperature", label: "Temperature" },
+  { value: "asphaltTemp", label: "Asphalt temp." },
+  { value: "precipitation", label: "Precipitation" },
+  { value: "wind", label: "Wind speed" },
+  { value: "directRadiation", label: "Solar Radiation" },
+  { value: "cloudCover", label: "Cloud coverage" }
 ];
 
 const selectedModelLabel = computed(() => {

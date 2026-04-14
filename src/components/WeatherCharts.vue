@@ -2,6 +2,10 @@
 import { ref, onMounted, watch } from "vue";
 import Chart from "chart.js/auto";
 
+Chart.defaults.color = "#ffffff";
+Chart.defaults.font.family = "Poppins";
+Chart.defaults.font.size = 12;
+
 type WeatherMetric =
   | "temperature"
   | "precipitation"
@@ -236,7 +240,7 @@ function renderChart() {
           display: hasAxis("y2") ? "auto" : false,
           grid: {
             drawOnChartArea: false,
-            color: "rgba(255,255,255,0.08)",
+            color: "rgba(255,255,255,0.2)",
           },
           title: {
             display: hasAxis("y2"),
