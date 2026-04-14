@@ -16,8 +16,7 @@ type WeatherMetric =
   | "wind"
   | "asphaltTemp"
   | "directRadiation"
-  | "cloudCover"
-  | "radiationCoef";
+  | "cloudCover";
 
 const selectedTrack = ref<Track | null>(null);
 const selectedDay = ref<DayOption>("today");
@@ -42,13 +41,12 @@ const availableModels: { value: WeatherModel; label: string }[] = [
 ];
 
 const availableMetrics: { value: WeatherMetric; label: string }[] = [
-  { value: "temperature", label: "Temperatur" },
-  { value: "asphaltTemp", label: "Asphalttemperatur" },
-  { value: "precipitation", label: "Niederschlag" },
-  { value: "wind", label: "Wind" },
-  { value: "directRadiation", label: "Direktstrahlung" },
-  { value: "cloudCover", label: "Wolkenbedeckung" }
-  //{ value: "radiationCoef", label: "Radiation Coef" },
+  { value: "temperature", label: "Temperature" },
+  { value: "asphaltTemp", label: "Asphalt temp." },
+  { value: "precipitation", label: "Precipitation" },
+  { value: "wind", label: "Wind speed" },
+  { value: "directRadiation", label: "Solar Radiation" },
+  { value: "cloudCover", label: "Cloud coverage" }
 ];
 
 const selectedModelLabel = computed(() => {
@@ -193,7 +191,8 @@ watch(selectedTrack, async (track) => {
   padding: 16px;
   border: 1px solid var(--accent);
   border-radius: 10px;
-  background: var(--panel-bg);
+  background: var(--bg);
+  min-width: 0;
 }
 
 .control-block {
@@ -211,7 +210,7 @@ watch(selectedTrack, async (track) => {
   width: 100%;
   min-height: 46px;
   padding: 0 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
   border-radius: 8px;
   background: var(--bg);
   color: var(--text-h);
@@ -241,13 +240,20 @@ watch(selectedTrack, async (track) => {
 
 @media (max-width: 900px) {
   .controls-grid {
-    grid-template-columns: 1fr;
-    max-width: none;
+    grid-template-columns: 300px minmax(280px, 1fr);
+    max-width: 800px;
   }
 
   .metrics-grid {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .controls-grid {
+    grid-template-columns: 1fr;
+    max-width: none;
   }
 
   .metric-option {
